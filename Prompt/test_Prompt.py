@@ -2,7 +2,7 @@ import os
 import openai 
 import sys
 import re 
-openai.api_key = 'YOUR_API_KEY'
+openai.api_key = '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'
 
 prompt2 = f"""
 당신의 임무는 사용자의 답변을 받아 그에 알맞은 답변과 행동을 생성하여 제공하는 것입니다. 
