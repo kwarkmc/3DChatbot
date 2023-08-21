@@ -20,6 +20,10 @@ import torch
 import numpy as np
 import models.vqvae as vqvae
 import models.t2m_trans as trans
+
+from visualize.simplify_loc2rot import joints2smpl
+from models.rotation2xyz import Rotation2xyz
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -108,8 +112,33 @@ def new_file(event):
 
             np.save(f'./MOTION/{txt_name}_motion.npy', xyz.detach().cpu().numpy())
 
-            import visualization.plot_3d_global as plot_3d
-            pose_vis = plot_3d.draw_to_batch(xyz.detach().cpu().numpy(),clip_text, [f'./GIF/{txt_name}_example.gif'])
+            motions = np.load(f'./MOTION/{txt_name}_motion.npy')[0]
+            frames, njoints, nfeats = motions.shape
+            j2s = joints2smpl(num_frames=frames, device_id=0, cuda=True)
+            rot2xyz = Rotation2xyz(device=torch.device("cuda:0"))
+
+            motion_tensor, opt_dict = j2s.joint2smpl(motions)
+            torch.save(torch.tensor(motion_tensor).clone(), f'./MOTION/{txt_name}_SMPL.pt')
+            numpy_smpl_result = motion_tensor.cpu().numpy()
+            np.save(f'./MOTION/{txt_name}_motion.npy', numpy_smpl_result)
+
+            print('time elapsed[SMPL]: ', time.time() - start_time)
+
+            vertices = rot2xyz(torch.tensor(motion_tensor).clone(), mask=None,
+                               pose_rep= 'rot6d', translation=True, glob=True,
+                               jointstype='vertices',
+                               vertstrans=True)
+            
+            torch.save(vertices, f'./MOTION/{txt_name}_vertices.pt')
+            numpy_vertices_result = vertices.cpu().numpy()
+            np.save(f'./MOTION/{txt_name}_vertices.npy', numpy_vertices_result)
+
+            print('time elapsed[VERTICES]: ', time.time() - start_time)
+
+            
+
+            # import visualization.plot_3d_global as plot_3d
+            # pose_vis = plot_3d.draw_to_batch(xyz.detach().cpu().numpy(),clip_text, [f'./GIF/{txt_name}_example.gif'])
     
     print("Processing Time :", time.time() - start_time)
 
