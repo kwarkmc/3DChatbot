@@ -4,6 +4,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import os
 
+
 #watchdogs=3.0.0
 #TEXT 폴더 내에 파일이 생성되면, 파일을 읽어서 motion을 생성하고, motion.npy를 생성한다.
 
@@ -33,6 +34,15 @@ def new_file(event):
             prompt = f.read().strip()
         
         os.system(f"{base_command} --input_text {file_name}")
+
+        try:
+            os.remove(file_name)
+            print(f"Removed {file_name}")
+        except FileNotFoundError:
+            print(f"{file_name} not found")
+        except Exception as e:
+            print(f"Failed to remove {file_name} because of {e}")
+    
 
 event_handler = FileSystemEventHandler()
 event_handler.on_created = new_file

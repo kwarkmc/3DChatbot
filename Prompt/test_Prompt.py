@@ -2,6 +2,11 @@ import os
 import openai 
 import sys
 import re 
+from googletrans import Translator
+import datetime
+
+translator = Translator()
+
 openai.api_key = 'YOUR_API_KEY'
 prompt2 = f"""
 당신의 임무는 사용자의 답변을 받아 그에 알맞은 답변과 행동을 생성하여 제공하는 것입니다. 
@@ -56,7 +61,7 @@ chatgpt: (왼팔을 들어 스쿼시 라켓을 잡는 모션을 보여준다.)
 행동은 괄호 안에 작성하고 사용자 답변에 알맞은 답변과 함께 답해주세요.
 """
 
-messages = [{'role':'system', 'content':prompt}]
+messages = [{'role':'system', 'content':prompt2}]
 
 # 반복적인 대화 
 while True:
@@ -78,7 +83,21 @@ while True:
     # 답변에서 () 부분만 출력
     p = re.compile('\(([^)]+)')
     action = p.findall(reply)
-    print('행동: ', action[0])
+    action = action[0]
+    action_trans = translator.translate(action, dest='en', src='ko')
+    action_trans = action_trans.text
+    print('행동: ', action)
+    print('Action: ', action_trans)
+
+    current_time = datetime.datetime.now()
+    file_name = current_time.strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
+
+    file_path = './motion-diffusion-model/TEXT/' + file_name
+
+    #해당 경로에 영어로 번역된 행동 1.txt 파일로 저장
+    with open(file_path, 'w') as f:
+        f.write(action_trans)
+
 
     messages.append({'role':'assistant', 'content':reply})
 
