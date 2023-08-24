@@ -7,7 +7,7 @@ import datetime
 
 translator = Translator()
 
-openai.api_key = 'YOUR_API_KEY'
+openai.api_key = ''
 prompt2 = f"""
 당신의 임무는 사용자의 답변을 받아 그에 알맞은 답변과 행동을 생성하여 제공하는 것입니다. 
 행동은 애니메이션 캐릭터가 움직이는 동작으로 작성해주세요.
@@ -83,7 +83,7 @@ while True:
     # 답변에서 () 부분만 출력
     p = re.compile('\(([^)]+)')
     action = p.findall(reply)
-    action = action[0]
+    action = " ".join(action)
     action_trans = translator.translate(action, dest='en', src='ko')
     action_trans = action_trans.text
     print('행동: ', action)
