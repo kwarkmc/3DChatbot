@@ -3,13 +3,13 @@ import pyodbc
 import datetime
 import time
 
-bvh_folder_path = "./BVH_files"
+bvh_folder_path = "C:/Users/054/Desktop/BVH_files"
 
 #Azure SQL DB Initialization 부분
 server='tcp:sql-3dchatbot-server.database.windows.net,1433'
 database='3D-ChatbotDB'
 username='SKT1'
-password=''
+password='asdf1234!'
 
 last_timestamp = datetime.datetime(2000, 1, 1, 0, 0, 0, 0)
 
@@ -35,7 +35,7 @@ while True:
 
         last_timestamp = timestamp
 
-        bvh_file_path = f"{bvh_folder_path}/{file_name}.bvh"
+        bvh_file_path = f"{bvh_folder_path}/{data_id}"
 
         with open(bvh_file_path, 'wb') as file:
             file.write(file_data)

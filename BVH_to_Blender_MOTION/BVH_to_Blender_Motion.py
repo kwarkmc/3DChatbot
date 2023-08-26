@@ -1,25 +1,9 @@
 import bpy, time, os, shutil
+from datetime import datetime
 
 # BVH 파일 저장 경로
 bvh_folder_path = "C:/Users/054/Desktop/BVH_files"
 files = [f for f in os.listdir(bvh_folder_path) if os.path.isfile(os.path.join(bvh_folder_path, f))]
-
-# DB 설정
-import pyodbc
-import datetime
-
-#Azure SQL DB Initialization 부분
-server='tcp:sql-3dchatbot-server.database.windows.net,1433'
-database='3D-ChatbotDB'
-username='SKT1'
-password=''
-
-conn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password+';Encrypt=yes;TrustServerCertificate=no;')
-
-cursor = conn.cursor()
-
-#DB 내의 가장 최근 파일을 불러오기 위해 2000년 1월 1일을 기준으로 설정
-last_timestamp = datetime.datetime(2000, 1, 1, 1, 1, 1, 1)
 
 # 메인 캐릭터, 시작 애니메이션 파일 위치는 BVH 파일 폴더와 다른 곳이어야 함
 adot = bpy.data.objects.get("HelloBlender") # 기본 캐릭터 
@@ -77,58 +61,26 @@ animation_on = True
 def main_timer():
     global bvh_folder_path, files, animation_on, adot, anilist
     print(int((time.time()-startTime)*10)/10, end="\r") # 프로그램 켜놓은 시간 체크
-
-    insert_query = """
-    SELECT TOP 1 * FROM BVHdb WHERE Timestamp > ? ORDER BY Timestamp DESC
-    """
-
-    cursor.execute(insert_query, last_timestamp)
-    rows = cursor.fetchone()
-
-    if rows:
-        data_id = rows[0]
-        timestamp = rows[1]
-        motion_content = rows[2]
-        label_name = rows[3]
-        file_name = rows[4]
-        file_data = rows[5]
-
-        last_timestamp = timestamp
-
-        bvh_file_path = f"{bvh_folder_path}/{file_name}.bvh"
-
-        with open(bvh_file_path, 'wb') as file:
-            file.write(file_data)
-
-        print(f"""
-                DATA DOWNLOADED!!
-                DataID:          {data_id}
-                Timestamp:       {timestamp}
-                MotionContent:   {motion_content}
-                LabelName:       {label_name}
-                FileName:        {file_name}
-                FileData (size): {len(file_data) if file_data else 0} bytes
-                """)
-
     files = [f for f in os.listdir(bvh_folder_path) if os.path.isfile(os.path.join(bvh_folder_path, f))]
     if len(files) > 1:
         files.sort(key=lambda f: os.path.getmtime(os.path.join(bvh_folder_path, f)))
         old_file_path = os.path.join(bvh_folder_path, files[0]).replace('\\', '/')
         os.remove(old_file_path)
         animation_on = True
+        print('bvh획득시간 :',datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     if animation_on and len(files) == 1:
         animation_on = False
         stop_animation()
         nowpath = os.path.join(bvh_folder_path, files[0]).replace('\\', '/')
         get_animation_delete(nowpath)
-        bpy.app.timers.register(restart_animation, first_interval=0.075)
+        print('bvh획득시간 :',datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        bpy.app.timers.register(restart_animation, first_interval=0.15)
     
     return 0.05 # 타이머 간격 (초)
 
 def restart_animation():
     global adot, anilist, cur_animation
     bpy.app.timers.unregister(restart_animation)
-    
     play_animation()
 
 # 타이머 등록, 타이머 간격을 주기로 update반복

@@ -30,3 +30,4 @@ source ~/.bashrc
 sudo apt-get install -y unixodbc-dev
 
 pip install pyodbc
+
