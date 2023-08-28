@@ -1,4 +1,4 @@
-import sys, bpy, time, os, shutil
+import sys, bpy, time, os, shutil, random
 from datetime import datetime
 import bpy, sys, math, os, mathutils 
 from typing import Any, Dict, Iterable, List, Tuple, Optional, Sequence
@@ -163,6 +163,7 @@ def get_animation_delete(bvh_path): # BVH파일을 블랜더 scene에 임포트,
                     horizontal_radius = 0.1 * (0.10 + bone.length)
                     vertical_radius = 0.1 * (0.10 + bone.length)
                     modified_length = bone.length * 1
+                    
                 temp_vertices, temp_faces = generate_bone_mesh_pydata(horizontal_radius, vertical_radius, modified_length)
 
                 vertex_index_offset = len(vertices)
@@ -237,9 +238,10 @@ def get_animation_delete(bvh_path): # BVH파일을 블랜더 scene에 임포트,
         mat = add_material("BlueMetal", use_nodes=True, make_node_tree_empty=True)
         output_node = mat.node_tree.nodes.new(type='ShaderNodeOutputMaterial')
         principled_node = mat.node_tree.nodes.new(type='ShaderNodeBsdfPrincipled')
-        principled_node.inputs['Base Color'].default_value = (0.1, 0.2, 0.7, 1.0)
-        principled_node.inputs['Metallic'].default_value = 0.9
-        principled_node.inputs['Roughness'].default_value = 0.1
+        R, G, B = random.random(), random.random(), random.random()
+        principled_node.inputs['Base Color'].default_value = (R, G, B, 0.5) #(0.1, 0.2, 0.7, 0.5)
+        principled_node.inputs['Metallic'].default_value = 0.6 #0.9
+        principled_node.inputs['Roughness'].default_value = 0.1 #0.1
         mat.node_tree.links.new(principled_node.outputs['BSDF'], output_node.inputs['Surface'])
         ################
         def arrange_nodes(node_tree: bpy.types.NodeTree, verbose: bool = False) -> None:

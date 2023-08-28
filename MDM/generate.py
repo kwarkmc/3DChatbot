@@ -204,6 +204,9 @@ def main():
 
     #Generate BVH from NPY
     smpl2bvh(f'{npy_path}')
+    
+    #####npy->bvh 생성중
+    
     print(f'[Done] BVH is at [{abs_path}]')
 
 

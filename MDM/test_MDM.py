@@ -53,6 +53,8 @@ def new_file(event):
             print(f"{file_name} not found")
         except Exception as e:
             print(f"Failed to remove {file_name} because of {e}")
+        
+        
 
         #./MOTION 폴더 내에 생성된 resultsanim0.bvh 파일을 읽어서 DB에 저장한다.
         bvh_path = './MOTION/resultsanim0.bvh'
@@ -62,6 +64,16 @@ def new_file(event):
             #remove space in prompt
             prompt_processed = prompt.replace(' ', '')
             prompt_processed = prompt_processed.replace('.', '')
+            
+            ######################################################
+            # 프롬프트 문자열 중 알파벳 아닌 모든 문자는 '0'으로 변경
+            prompt_processed = list(prompt_processed)
+            for i in range(len(prompt_processed)):
+                if prompt_processed[i].isalpha() == False:
+                    prompt_processed[i] = str(0)
+            prompt_processed= "".join(prompt_processed)
+            ######################################################
+                
             print('PROMPT : ' + prompt)
             #print('BVH PATH : ' + bvh_path)
             os.rename(bvh_path, f'./MOTION/{prompt_processed}.bvh')
@@ -87,6 +99,8 @@ def new_file(event):
         """
 
         cursor.execute(insert_query, list(data_to_insert.values()))
+        
+        
 
         conn.commit()
 

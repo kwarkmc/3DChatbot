@@ -5,14 +5,14 @@ import json
 
 #chercker에는 어미를 저장해야 함. '아이들이 자주 사용할만한 단어의 어간', '저장할 bhv파일명', 영향력
 checker = {
-    '안녕' : ('hello.bvh',10),
-    '점프' : ('jump.bvh',11),
-    '배고프' : ('stomach.bvh',8),
-    '뭐하' : ('shakehand.bvh',100),
+    '안녕' : ('pre_hello.bvh',10),
+    '점프' : ('pre_jump.bvh',11),
+    '배고프' : ('pre_stomach.bvh',11),
+    '뭐하' : ('pre_shakehand.bvh',9),
 }
 
 kkma = Kkma()
-Input_text = "우어어아아" ##사용자 입력 텍스트
+Input_text = "안녕 배고픈데 뭐해" ##사용자 입력 텍스트
 Inputword_list = kkma.pos(Input_text)
 Dict = {}
 for i in range(len(Inputword_list)):
